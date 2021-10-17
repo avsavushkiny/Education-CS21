@@ -30,7 +30,7 @@ void setup()
 void loop()
 {
     float a = getValue(); //call function getValue
-    astroCalc(a);         //call function output_fn
+    astroCalc(a);         //call function astroCalc
     
     delay(200);
 }
