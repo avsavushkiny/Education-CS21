@@ -1,0 +1,30 @@
+/*
+issue 5
+
+Напишите полноценную программу, которая принимает целое число от пользователя
+(используйте parseInt), удваивает его с помощью функции doubleNumber()
+из предыдущего задания, а затем выводит результат на экран.
+*/
+
+void setup(void)
+{
+    //port speed
+    Serial.begin(9600);
+}
+
+//function 2 * a
+int doubleNumber(int a)
+{
+   return 2 * a;
+}
+
+void loop(void)
+{
+    int a;
+    Serial.println("Enter the number");
+    a = Serial.parseInt();
+    Serial.println(doubleNumber(a));
+
+    //2 sec
+    delay(2000);
+}
