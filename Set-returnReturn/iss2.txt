@@ -4,7 +4,7 @@ issue 2
 Какие здесь есть две проблемы?
 */
 
-/*
+
 int multiply(int a, int b)
 {
    int product = a * b;
@@ -15,4 +15,3 @@ void loop()
    Serial.println(multiply(5));
    return 0;
 }
-*/
