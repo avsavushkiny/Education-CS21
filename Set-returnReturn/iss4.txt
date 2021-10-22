@@ -10,3 +10,8 @@ int doubleNumber(int a)
 {
    return 2 * a;
 }
+
+void loop(void) //caller
+{
+   Serial.println(doubleNumber(3));
+}

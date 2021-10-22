@@ -17,21 +17,17 @@ void setup()
 
 void loop()
 {
-    Serial.println("Enter the number");
     Serial.println(hoursMinute());
     delay(1000);
 }
 
 int getValue()
 {
-    if (Serial.available() > 0)
-    {
-        return Serial.parseInt();
-    }
+    return Serial.parseInt();
 }
 
 String hoursMinute()
 {
     Serial.println((String) "Minute: " + (getValue() * 60));
-    return "ok";
+    return "Enter the number";
 }
