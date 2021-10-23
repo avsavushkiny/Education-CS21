@@ -14,7 +14,7 @@ Enter the number of light years: 4.2
 1 световой год = 63240 астрономических единиц
 
 stu D. Kozin, doc A. Savushkin
-16.10.21
+23.10.21
 */
 
 //prototype

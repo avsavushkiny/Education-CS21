@@ -13,7 +13,7 @@ Serial.print('N') gives "N"
 Serial.print("Hello world.") gives "Hello world."
 
 doc A. Savushkin
-16.10.21
+23.10.21
 */
 
 void setup(void)

@@ -11,7 +11,7 @@ a = a + 1;
 result = a - b;
 
 doc A. Savushkin
-18.10.21
+23.10.21
 */
 
 void setup(void)
@@ -29,6 +29,5 @@ void loop(void)
     int result = a - b;
     
     //output data
-    Serial.println(result);
     Serial.println((String) "Result value = " + result);
 }

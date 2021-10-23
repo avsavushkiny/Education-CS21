@@ -8,7 +8,7 @@ Set 8F return - ConvertHoursMinute
 и возвращает значение в минутах
 
 doc A. Savushkin
-19.10.21
+23.10.21
 */
 
 void setup()

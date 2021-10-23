@@ -12,7 +12,7 @@ Set 1 - Your name, your e-mail
 Serial.print(F(“Hello World”)); - выводим текст из flash памяти
 
 doc A. Savushkin
-16.10.21
+23.10.21
 */
 
 void setup(void)

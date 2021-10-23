@@ -1,0 +1,8 @@
+void loop(void)
+{
+    for (int a = 0; a < 10; a++) //a = a + 1
+    {
+        Serial.println(a);
+        delay(1000);
+    }
+}
