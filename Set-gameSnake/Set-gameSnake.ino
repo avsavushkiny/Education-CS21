@@ -1,6 +1,6 @@
-#include "U8glib.h"
+#include <U8glib.h>
 
-U8GLIB_ST7920_128X64_4X u8g(13, 11, 12);
+U8GLIB_ST7920_128X64_4X u8g(13, 11, 12); //SCK, MOSI, CS
 
 //button positions and values
 int left = 2, right = 3, down = 4, up = 5;
@@ -22,7 +22,7 @@ struct gameItem {
 int gameItemSize = 4;
 
 //default snake size
-unsigned int snakeSize = 5;
+unsigned int snakeSize = 5; //5
 
 //array to store all snake body part positions
 gameItem snake[100];
@@ -44,23 +44,28 @@ void draw() {
 	drawSnake();
 	drawFood();
 }
-void draw2() {
-	drawText("Game Over", 30, 30);
-}
-void drawText(String text, int x, int y) {
-	//char array to print
-	char charBuff[10];
-	//convert the string to char array
-	text.toCharArray(charBuff, 10);
-	//prepare the font
-	u8g.setFont(u8g_font_5x8);
-	//print the text
-	u8g.drawStr(x, y, charBuff);
+
+void drawGameOver() {
+	//create box
+	u8g.setColorIndex(1);             //black
+	u8g.drawBox(0, 0, 127, 63);       //x, y, w, h
+	
+	//create message
+	u8g.setColorIndex(0);             //white
+	u8g.setFont(u8g_font_6x12);		  //font
+	u8g.drawStr(37, 35, "game over"); //x, y, message
 }
 
 void drawSnake() {
 	for (int i = 0; i < snakeSize; i++) {
 		u8g.drawFrame(snake[i].X, snake[i].Y, gameItemSize, gameItemSize);
+
+      //head Snake black colour
+      if (i == 0) {
+      u8g.setColorIndex(1);
+      u8g.drawBox(snake[i].X, snake[i].Y, gameItemSize, gameItemSize);
+      }
+      
 	}
 
 }
@@ -93,7 +98,6 @@ void handleColisions() {
 	}
 }
 
-
 void spawnSnakeFood() {
 	//generate snake Food position
 	do {
@@ -106,16 +110,16 @@ void spawnSnakeFood() {
 
 void gameSetup() {
 	//Reset snake size
+	//snake head + snake body
 	snakeSize = 5;
 
 	//snakeHead initial position
-
 	int sHeadX;
 	int sHeadY;
 	do {
-		sHeadX = random(2, 126);
-		
+		sHeadX = random(2, 126);	
 	} while (sHeadX % gameItemSize != 0);
+	
 	do {
 		sHeadY = random(2, 62);
 	} while (sHeadY % gameItemSize != 0);
@@ -123,34 +127,36 @@ void gameSetup() {
 	//set first part of the snake
 	snake[0].X = sHeadX;
 	snake[0].Y = sHeadY;
-	//generate random positions for the rest of the snake
+  
+	//generate positions for the snake's body
 	for (int i = 1; i < snakeSize; i++) {
-		//choose random direction to build snake
-		int dir = random(0, 3);
+  
+		//add random direction to build snake
+		//int dir = random(0, 3);
 
-		if (dir == 0)//means left
-		{
-			snake[i].X = snake[i-1].X - gameItemSize;
+		//if (dir == 0)//means left
+		//{
+			snake[i].X = snake[i - 1].X - gameItemSize;
 			snake[i].Y = snake[i - 1].Y;
-		}
+		//}
 
-		else if (dir == 1)//means right
-		{
+		//else if (dir == 1)//means right
+		//{
 			snake[i].X = snake[i - 1].X + gameItemSize;
 			snake[i].Y = snake[i - 1].Y;
-		}
+		//}
 
-		else if (dir == 2)//means up
-		{
+		//else if (dir == 2)//means up
+		//{
 			snake[i].X = snake[i - 1].X;
 			snake[i].Y = snake[i - 1].Y - gameItemSize;
-		}
+		//}
 
-		else if (dir == 3)//means down
-		{
+		//else if (dir == 3)//means down
+		//{
 			snake[i].X = snake[i - 1].X;
 			snake[i].Y = snake[i - 1].Y + gameItemSize;
-		}
+		//}
 	}
 
 	//generate snake Food position
@@ -229,7 +235,7 @@ void playGame() {
 	do {
 		
 		draw();
-		delay(50);
+		delay(250); //50
 	} while (u8g.nextPage());
 
 }
@@ -268,11 +274,12 @@ void gamePaused() {
 		delay(50);
 	} while (u8g.nextPage());
 }
+
 void gameLost() {
 	u8g.firstPage();
 	do {
 
-		draw2();
+		drawGameOver();
 		delay(50);
 	} while (u8g.nextPage());
 	delay(2000);
@@ -281,33 +288,46 @@ void gameLost() {
 
 void setup() {
 	//Set the pinmodes
-	pinMode(left, INPUT);
+	pinMode(left,  INPUT);
 	pinMode(right, INPUT);
-	pinMode(down, INPUT);
-	pinMode(up, INPUT);
+	pinMode(down,  INPUT);
+	pinMode(up,    INPUT);
 	// random seed for the random function
 	randomSeed(analogRead(0));
-
-	if (u8g.getMode() == U8G_MODE_R3G3B2)
-		u8g.setColorIndex(255); // white
-	else if (u8g.getMode() == U8G_MODE_GRAY2BIT)
-		u8g.setColorIndex(3); // max intensity
-	else if (u8g.getMode() == U8G_MODE_BW)
-		u8g.setColorIndex(1); // pixel on
 }
 
 void loop() {
+	/*
 	switch (state)
 	{
-	case setupGame: gameSetup();
+	case  setupGame: gameSetup();
 		break;
-
 	case pausedGame: gamePaused();
 		break;
-	case inGame: playGame();
+	case     inGame: playGame();
 		break;
-	case gameOver: gameLost();
+	case   gameOver: gameLost();
 		break;
 	}
+	*/
 
+    if (state == setupGame)
+	{
+		gameSetup();
+	}
+
+	if (state == pausedGame)
+	{
+		gamePaused();
+	}
+
+	if (state == inGame)
+	{
+		playGame();
+	}
+
+	if (state == gameOver)
+	{
+		gameLost();
+	}
 }
