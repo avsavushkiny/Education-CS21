@@ -1,12 +1,12 @@
 #include <U8glib.h>
 
-U8GLIB_ST7920_128X64_4X u8g(13, 11, 12); //SCK, MOSI, CS
+U8GLIB_ST7920_128X64_4X u8g(13, 11, 12); //e(SCK), r/w(MOSI), rs(CS)
 
 //button positions and values
 int left = 2, right = 3, down = 4, up = 5;
 int leftV = 0, rightV = 0, downV = 0, upV = 0;
 
-//snakedirection:
+//snake direction:
 //0: left
 //1: right
 //2: down
@@ -30,8 +30,9 @@ gameItem snake[100];
 //snake food item
 gameItem snakeFood;
 
-//GameStates
-enum gameState {
+enum gameState
+{
+	//gameStates
 	setupGame,
 	pausedGame,
 	inGame,
@@ -40,12 +41,30 @@ enum gameState {
 
 gameState state = setupGame;
 
-void draw() {
+int scoreV = 0;
+
+void draw(void)
+{	
 	drawSnake();
 	drawFood();
+	drawScore();
 }
 
-void drawGameOver() {
+void drawScore(void)
+{
+	//setup font
+	u8g.setColorIndex(1);
+	u8g.setFont(u8g_font_profont10);
+	//add $
+	u8g.setPrintPos(0, 8);
+	u8g.print("$");
+	//add score
+	u8g.setPrintPos(6, 8);
+	u8g.print(scoreV);
+}
+
+void drawGameOver(void)
+{
 	//create box
 	u8g.setColorIndex(1);             //black
 	u8g.drawBox(0, 0, 127, 63);       //x, y, w, h
@@ -56,7 +75,9 @@ void drawGameOver() {
 	u8g.drawStr(37, 35, "game over"); //x, y, message
 }
 
-void drawSnake() {
+void drawSnake(void)
+{
+	//head + body Snake
 	for (int i = 0; i < snakeSize; i++) {
 		u8g.drawFrame(snake[i].X, snake[i].Y, gameItemSize, gameItemSize);
 
@@ -65,40 +86,47 @@ void drawSnake() {
       u8g.setColorIndex(1);
       u8g.drawBox(snake[i].X, snake[i].Y, gameItemSize, gameItemSize);
       }
-      
 	}
-
 }
 
-void drawFood() {
+void drawFood(void)
+{
+	//create Food
 	u8g.drawBox(snakeFood.X, snakeFood.Y, gameItemSize, gameItemSize);
 }
 
-void handleColisions() {
-
-	//check if snake eats food
-	if (snake[0].X == snakeFood.X && snake[0].Y == snakeFood.Y) {
+void handleColisions(void)
+{
+	//snake eats food
+	if (snake[0].X == snakeFood.X && snake[0].Y == snakeFood.Y)
+	{
 		//increase snakeSize
 		snakeSize++;
+		//score
+		scoreV++;
 		//regen food
 		spawnSnakeFood();
 	}
 
-	//check if snake collides with itself
-	else {
+	//snake collides with itself
+	else
+	{
 		for (int i = 1; i < snakeSize; i++) {
 			if (snake[0].X == snake[i].X && snake[0].Y == snake[i].Y) {
 				state = gameOver;
 			}
 		}
 	}
-	//check for wall collisions
-	if ((snake[0].X < 1) || (snake[0].Y < 1) || (snake[0].X > 127) || (snake[0].Y > 63)) {
+
+	//wall collisions
+	if ((snake[0].X < 1) || (snake[0].Y < 1) || (snake[0].X > 127) || (snake[0].Y > 63))
+	{
 		state = gameOver;
 	}
 }
 
-void spawnSnakeFood() {
+void spawnSnakeFood(void)
+{
 	//generate snake Food position
 	do {
 		snakeFood.X = random(2, 126);
@@ -108,7 +136,8 @@ void spawnSnakeFood() {
 	} while (snakeFood.Y % 4 != 0);
 }
 
-void gameSetup() {
+void gameSetup(void)
+{
 	//Reset snake size
 	//snake head + snake body
 	snakeSize = 5;
@@ -116,10 +145,11 @@ void gameSetup() {
 	//snakeHead initial position
 	int sHeadX;
 	int sHeadY;
+	
 	do {
 		sHeadX = random(2, 126);	
 	} while (sHeadX % gameItemSize != 0);
-	
+
 	do {
 		sHeadY = random(2, 62);
 	} while (sHeadY % gameItemSize != 0);
@@ -166,35 +196,37 @@ void gameSetup() {
 	state = pausedGame;
 }
 
-void handleInput() {
-	//read left button
+void handleInput(void)
+{
+	//read button
 	leftV = digitalRead(left);
-	//read right button
-	rightV = digitalRead(right);
-	//read up button
-	upV = digitalRead(up);
-	//read down button
+   rightV = digitalRead(right);
+	  upV = digitalRead(up);
 	downV = digitalRead(down);
 
-
-	if (leftV != 0 && snakeDir != 1) {
+	if (leftV != 0 && snakeDir != 1)
+	{
 		snakeDir = 0;
 	}
 
-	if (rightV != 0 && snakeDir != 0) {
+	if (rightV != 0 && snakeDir != 0)
+	{
 		snakeDir = 1;
 	}
 
-	if (downV != 0 && snakeDir != 3) {
+	if (downV != 0 && snakeDir != 3)
+	{
 		snakeDir = 2;
 	}
 
-	if (upV != 0 && snakeDir != 2) {
+	if (upV != 0 && snakeDir != 2)
+	{
 		snakeDir = 3;
-	}
+	}	
 }
 
-void updateValues() {
+void updateValues(void)
+{	
 	//update all body parts of the snake excpet the head
 	for (int i = snakeSize - 1; i > 0; i--) {
 		snake[i] = snake[i - 1];
@@ -223,94 +255,99 @@ void updateValues() {
 
 		snake[0].Y -= gameItemSize;
 	}
-
 }
 
-void playGame() {
+void playGame(void)    //rendering
+{	
+	//processing
 	handleColisions();
 	handleInput();
 	updateValues();
 	
+	//rendering
 	u8g.firstPage();
-	do {
-		
+	do {	
 		draw();
-		delay(250); //50
+		delay(150);             //game speed
 	} while (u8g.nextPage());
-
 }
 
-void gamePaused() {
-	//read left button
+void gamePaused(void)
+{
+	//read button
 	leftV = digitalRead(left);
-	//read right button
-	rightV = digitalRead(right);
-	//read up button
-	upV = digitalRead(up);
-	//read down button
+   rightV = digitalRead(right);
+	  upV = digitalRead(up);
 	downV = digitalRead(down);
 
-
-	if (leftV != 0) {
-		state = inGame;
-	}
-
-	if (rightV != 0) {
-		state = inGame;
-	}
-
-	if (downV != 0) {
-		state = inGame;
-	}
-
-	if (upV != 0) {
+	if ((leftV !=0) || (rightV !=0) || (downV !=0) || (upV !=0))
+	{
 		state = inGame;
 	}
 
 	u8g.firstPage();
 	do {
-
 		draw();
-		delay(50);
 	} while (u8g.nextPage());
 }
 
-void gameLost() {
+void gameLost(void)
+{
+	//discharge score
+	scoreV = 0;
+	//rendering
 	u8g.firstPage();
 	do {
-
 		drawGameOver();
-		delay(50);
 	} while (u8g.nextPage());
 	delay(2000);
+
 	state = setupGame;
 }
 
-void setup() {
+void boyLogo(void)
+{
+	//logo w32px h32px
+	static const unsigned char game_boy[] = {
+	0xff, 0xff, 0xff, 0xff, 0x01, 0x00, 0x00, 0x80, 0x01, 0x00, 0x00, 0x80,
+	0x01, 0x00, 0x00, 0x80, 0x01, 0x00, 0x00, 0x80, 0x01, 0x00, 0x00, 0x80,
+	0x01, 0x00, 0x00, 0x80, 0x01, 0x00, 0x00, 0x80, 0x01, 0x00, 0x00, 0x80,
+	0x01, 0x00, 0x00, 0x80, 0xf9, 0xcf, 0xff, 0xf0, 0xf9, 0xff, 0xff, 0xf8,
+	0xf9, 0xff, 0xff, 0xf9, 0x39, 0x7e, 0xf8, 0xbd, 0x3d, 0x3e, 0xf8, 0x9f,
+	0xfd, 0x1f, 0xf8, 0x9f, 0xfd, 0x1f, 0xf8, 0x8f, 0xfd, 0x1f, 0xb8, 0x87,
+	0x1d, 0x1e, 0x9c, 0x87, 0x1f, 0x3e, 0x9e, 0x83, 0xff, 0xff, 0xdf, 0x83,
+	0xff, 0xff, 0xcf, 0x83, 0xff, 0xf3, 0xc3, 0x83, 0x01, 0x00, 0x00, 0x80,
+	0x01, 0x00, 0x00, 0x80, 0x01, 0x00, 0x00, 0x80, 0x01, 0x00, 0x00, 0x80,
+	0x01, 0x00, 0x00, 0x80, 0x01, 0x00, 0x00, 0x80, 0x01, 0x00, 0x00, 0x80,
+	0x01, 0x00, 0x00, 0x80, 0xff, 0xff, 0xff, 0xff,
+	};
+
+	//rendering
+	u8g.firstPage();
+	do {	
+	u8g.drawXBM(48, 16, 32, 32, game_boy); //x, y, w, h, xbm
+	} while (u8g.nextPage());
+	delay(2000);
+}
+
+void setup(void)
+{
 	//Set the pinmodes
 	pinMode(left,  INPUT);
 	pinMode(right, INPUT);
 	pinMode(down,  INPUT);
 	pinMode(up,    INPUT);
+
 	// random seed for the random function
 	randomSeed(analogRead(0));
+	//rendering logo to start gameboard
+	boyLogo();
 }
 
-void loop() {
-	/*
-	switch (state)
-	{
-	case  setupGame: gameSetup();
-		break;
-	case pausedGame: gamePaused();
-		break;
-	case     inGame: playGame();
-		break;
-	case   gameOver: gameLost();
-		break;
-	}
-	*/
-
+void loop(void)
+{
+	
+	//game states
     if (state == setupGame)
 	{
 		gameSetup();
