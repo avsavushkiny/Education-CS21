@@ -1,3 +1,12 @@
+/*
+Week 000
+
+Set - Game Snake
+
+doc A. Savushkin
+03.11.21
+*/
+
 #include <U8glib.h>
 
 U8GLIB_ST7920_128X64_4X u8g(13, 11, 12); //e(SCK), r/w(MOSI), rs(CS)
@@ -11,7 +20,7 @@ int leftV = 0, rightV = 0, downV = 0, upV = 0;
 //1: right
 //2: down
 //3: up
-int snakeDir = 1;
+int snakeDir = 0;
 
 struct gameItem {
 	int X; // x position
@@ -346,7 +355,6 @@ void setup(void)
 
 void loop(void)
 {
-	
 	//game states
     if (state == setupGame)
 	{
