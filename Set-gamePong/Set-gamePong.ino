@@ -9,11 +9,13 @@ doc A. Savushkin
 
 #include <U8glib.h>
 
+U8GLIB_ST7920_128X64_4X u8g(13, 11, 12); //e(SCK), r/w(MOSI), rs(CS)
+
 // Define the PINS you're goint to use on your Arduino Nano
 int controller1 = 2; // ANALOG 2
 int controller2 = 3; // ANALOG 3
 int ledPin = 13;     // DIGITAL 13
-int btnPin = 5;      // DIGITAL 5
+int btnPin = 5;      // DIGITAL 5 - on Start game
 
 // Define variables
 int buttonState = 0; // HIGH = Pressed
@@ -33,12 +35,32 @@ int ballY = 64 / 2;
 int ballSpeedX = 2;
 int ballSpeedY = 1;
 
+const uint8_t pongLogo[] PROGMEM={ //-- width: 70, height: 20
+  0x00, 0x00, 0x00, 0x06, 0x00, 0x60, 0x00, 0x00, 0x00, 0xFE, 0x03, 0xE0, 
+  0x7F, 0x00, 0xFC, 0x03, 0xE0, 0x1F, 0xFE, 0x0F, 0xF0, 0xFF, 0x01, 0xFE, 
+  0x07, 0xF0, 0x1F, 0xFE, 0x0F, 0xF8, 0xFF, 0x03, 0xFF, 0x0F, 0xFC, 0x1F, 
+  0x1E, 0x1E, 0x7C, 0xE0, 0x03, 0x0F, 0x0F, 0xFC, 0x19, 0x1E, 0x1E, 0x3E, 
+  0xC0, 0x87, 0x07, 0x1E, 0x3E, 0x00, 0x1E, 0x1C, 0x1E, 0x80, 0x8F, 0x07, 
+  0x1E, 0x1F, 0x00, 0x1E, 0x1E, 0x0F, 0x00, 0x8F, 0x07, 0x1E, 0x0F, 0x00, 
+  0x1E, 0x1F, 0x0F, 0x00, 0x8F, 0x07, 0x1E, 0x0F, 0x00, 0xFE, 0x0F, 0x0F, 
+  0x00, 0x8F, 0x07, 0x1E, 0x0F, 0x00, 0xFE, 0x07, 0x0F, 0x00, 0x8F, 0x07, 
+  0x1E, 0x8F, 0x1F, 0xFE, 0x03, 0x0F, 0x00, 0x8F, 0x07, 0x1E, 0x8F, 0x1F, 
+  0x1E, 0x00, 0x1E, 0x00, 0x8F, 0x07, 0x1E, 0x8F, 0x1F, 0x1E, 0x00, 0x1E, 
+  0x80, 0x87, 0x07, 0x1E, 0x1F, 0x1E, 0x1E, 0x00, 0x7E, 0xC0, 0x87, 0x07, 
+  0x1E, 0x3E, 0x1E, 0x1E, 0x00, 0xFC, 0xF9, 0x83, 0x07, 0x1E, 0x7C, 0x1E, 
+  0x1E, 0x00, 0xF8, 0xFF, 0x81, 0x07, 0x1E, 0xFC, 0x1F, 0x1E, 0x00, 0xE0, 
+  0xFF, 0x80, 0x07, 0x1E, 0xF0, 0x1F, 0x1E, 0x00, 0x80, 0x3F, 0x80, 0x07, 
+  0x1E, 0xE0, 0x1F, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+};
+
 void setup()
 {
     pinMode(ledPin, OUTPUT);
     pinMode(btnPin, INPUT);
 
     digitalWrite(ledPin, HIGH);
+
+    drawPongLogo();
 }
 
 void loop()
@@ -56,8 +78,9 @@ void loop()
     if (buttonState == HIGH && gameState == 0)
     {
         gameState = 1;
-        delay(100);
+        delay(250);
     }
+
     else if (buttonState == HIGH && (gameState == 1 || gameState == 2))
     {
         gameState = 0;
@@ -65,76 +88,75 @@ void loop()
         scorePlayer2 = 0;
         ballX = 128 / 2;
         ballY = 64 / 2;
-        delay(100);
+        delay(250);
     }
 
     if (gameState == 0)
     {
-        display.setTextSize(2);
-        display.setTextColor(WHITE);
-        display.setCursor(40, 18);
-        display.println("PONG");
-        display.setTextSize(1);
-        display.setTextColor(WHITE);
-        display.setCursor(32, 38);
-        display.println("press start");
-        display.display();
-        display.clearDisplay();
+        //output start message
+        drawStartMessage(); //+
     }
 
     if (gameState == 1)
     {
-        drawField(scorePlayer1, scorePlayer2);
-
-        collisionControl();
-        drawBall();
-
-        display.display();
-        display.clearDisplay();
+        u8g.firstPage();
+        do {
+            drawField(scorePlayer1, scorePlayer2); //+
+            collisionControl();
+            drawBall();
+        } while (u8g.nextPage());
     }
 
     if (gameState == 2)
     {
+        u8g.firstPage();
+        do {
         drawField(scorePlayer1, scorePlayer2);
+        
+        u8g.setColorIndex(1);
+        u8g.setFont(u8g_font_6x12);
 
-        display.setTextSize(1);
-        display.setTextColor(WHITE);
+        if (scorePlayer1 == 10)
+        {
+            u8g.setPrintPos(15, 30);
+        }
+        else if (scorePlayer2 == 10)
+        {
+            u8g.setPrintPos(77, 30);
+        }
+        u8g.print("winner!");
+        } while (u8g.nextPage());
 
-        if (scorePlayer1 == 2)
-        {
-            display.setCursor(15, 30);
-        }
-        else if (scorePlayer2 == 2)
-        {
-            display.setCursor(77, 30);
-        }
-        display.println("winner!");
-        display.display();
-        display.clearDisplay();
+        delay(2000);
+        setup();
     }
 }
 
-void drawField(int score1, int score2)
+void drawField(int score1, int score2) //+
 {
-    display.fillRect(0, round(paddlePositionPlayer1), 2, 18, 1);
-    display.fillRect(126, round(paddlePositionPlayer2), 2, 18, 1);
+        u8g.setColorIndex(1);
+        u8g.drawFrame(0, round(paddlePositionPlayer1), 2, 18);   //x, y, w, h
+        u8g.drawFrame(126, round(paddlePositionPlayer2), 2, 18); //x, y, w, h
 
-    display.setTextSize(1);
-    display.setTextColor(WHITE);
-    display.setCursor(55, 0);
-    display.print(score1);
-    display.print(":");
-    display.print(score2);
+	    u8g.setFont(u8g_font_profont10);
+        u8g.setPrintPos(10, 8);
+        u8g.print(score1);
+        
+        u8g.setPrintPos(73, 8);
+        u8g.print(score2);
 
-    display.fillRect(63, 12, 1, 5, 1);
-    display.fillRect(63, 22, 1, 5, 1);
-    display.fillRect(63, 32, 1, 5, 1);
-    display.fillRect(63, 42, 1, 5, 1);
-    display.fillRect(63, 52, 1, 5, 1);
-    display.fillRect(63, 62, 1, 5, 1);
+        uint8_t dist = 2;
+        for (uint8_t a = 0; a < 8; a++)
+        {
+            u8g.drawFrame(63, dist, 1, 4);
+            dist = dist + 8;
+        }
+        
+        u8g.drawHLine(0, 0, 127);
+        u8g.drawHLine(0, 63, 127);
 }
 
-void collisionControl()
+void collisionControl() //+
 {
     //bounce from top and bottom
     if (ballY >= 64 - 2 || ballY <= 0)
@@ -155,7 +177,7 @@ void collisionControl()
             scorePlayer2++;
             ballX = 128 / 4 * 3;
         }
-        if (scorePlayer1 == 2 || scorePlayer2 == 2)
+        if (scorePlayer1 == 10 || scorePlayer2 == 10)
         {
             gameState = 2;
         }
@@ -181,9 +203,39 @@ void collisionControl()
 
 void drawBall()
 {
-
-    display.fillRect(ballX, ballY, 2, 2, 1);
+    u8g.drawFrame(ballX, ballY, 2, 2);
 
     ballX += ballSpeedX;
     ballY += ballSpeedY;
+
+    delay(50); //speed game
+}
+
+void drawStartMessage(void) //+
+{
+	u8g.firstPage();
+    do {	
+	    u8g.setColorIndex(1); 
+	    u8g.setFont(u8g_font_profont10);
+	    u8g.drawStr(37, 35, "press start");
+        
+		delay(50); 
+	} while (u8g.nextPage());
+}
+
+void drawPongLogo() //+
+{
+    u8g.firstPage();
+	do {	
+	u8g.drawXBMP(29, 16, 70, 20, pongLogo); //x, y, w, h, xbmp
+
+    u8g.setFont(u8g_font_profont10);
+    u8g.setPrintPos(29, 43); //x, y
+    u8g.print((String) "Atari. 1972");
+    
+    u8g.setPrintPos(29, 50); //x, y
+    u8g.print((String) "Boy. 2021");
+
+	} while (u8g.nextPage());
+	delay(2000);
 }
