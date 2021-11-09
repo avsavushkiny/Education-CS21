@@ -35,7 +35,9 @@ int ballY = 64 / 2;
 int ballSpeedX = 2;
 int ballSpeedY = 1;
 
-const uint8_t pongLogo[] PROGMEM={ //-- width: 70, height: 20
+int centrePlayer1 = 0;
+
+const uint8_t pongLogo[] PROGMEM={ //70 20
   0x00, 0x00, 0x00, 0x06, 0x00, 0x60, 0x00, 0x00, 0x00, 0xFE, 0x03, 0xE0, 
   0x7F, 0x00, 0xFC, 0x03, 0xE0, 0x1F, 0xFE, 0x0F, 0xF0, 0xFF, 0x01, 0xFE, 
   0x07, 0xF0, 0x1F, 0xFE, 0x0F, 0xF8, 0xFF, 0x03, 0xFF, 0x0F, 0xFC, 0x1F, 
@@ -61,6 +63,9 @@ void setup()
     digitalWrite(ledPin, HIGH);
 
     drawPongLogo();
+    gameState = 0;      //reset game state
+    scorePlayer1 = 0;
+    scorePlayer2 = 0;
 }
 
 void loop()
@@ -94,7 +99,10 @@ void loop()
     if (gameState == 0)
     {
         //output start message
-        drawStartMessage(); //+
+        drawStartMessage();
+        //time start
+        delay(5000);
+        gameState = 1;
     }
 
     if (gameState == 1)
@@ -127,7 +135,7 @@ void loop()
         u8g.print("winner!");
         } while (u8g.nextPage());
 
-        delay(2000);
+        delay(5000);
         setup();
     }
 }
@@ -196,6 +204,11 @@ void collisionControl() //+
     {
         if (ballY > round(paddlePositionPlayer2) - 2 && ballY < round(paddlePositionPlayer2) + 18)
         {
+            if (ballY > round(paddlePositionPlayer2) + 6 && ballY < round(paddlePositionPlayer2) + 12)
+            {
+                ballSpeedX *= -1;
+            }
+
             ballSpeedX *= -1;
         }
     }
@@ -205,10 +218,10 @@ void drawBall()
 {
     u8g.drawFrame(ballX, ballY, 2, 2);
 
-    ballX += ballSpeedX;
-    ballY += ballSpeedY;
+    ballX += ballSpeedX; Serial.println((String) "ballX " + ballX);
+    ballY += ballSpeedY; Serial.println((String) "ballY " + ballY);
 
-    delay(50); //speed game
+    delay(10); //speed ball
 }
 
 void drawStartMessage(void) //+
@@ -221,6 +234,8 @@ void drawStartMessage(void) //+
         
 		delay(50); 
 	} while (u8g.nextPage());
+
+
 }
 
 void drawPongLogo() //+
@@ -230,10 +245,10 @@ void drawPongLogo() //+
 	u8g.drawXBMP(29, 16, 70, 20, pongLogo); //x, y, w, h, xbmp
 
     u8g.setFont(u8g_font_profont10);
-    u8g.setPrintPos(29, 43); //x, y
+    u8g.setPrintPos(30, 43); //x, y
     u8g.print((String) "Atari. 1972");
     
-    u8g.setPrintPos(29, 50); //x, y
+    u8g.setPrintPos(30, 50); //x, y
     u8g.print((String) "Boy. 2021");
 
 	} while (u8g.nextPage());
