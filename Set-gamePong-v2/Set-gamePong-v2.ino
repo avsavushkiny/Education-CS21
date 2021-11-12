@@ -215,19 +215,6 @@ void addEffect(int paddleSpeed)
     ballSpeedY = -MAX_Y_SPEED;
 }
 
-void valPaddle()
-{
-  int controlA = analogRead(CONTROL_A);
-  int controlB = analogRead(CONTROL_B);
-  int absValPaddle = abs(controlA - analogRead(CONTROL_A) + controlB - analogRead(CONTROL_B));
-
-  while (absValPaddle < 10)
-  {
-    // show as long as the total absolute change of
-    // both potmeters is smaler than 5
-  }
-}
-
 //draw value score
 void drawScore()
 {
