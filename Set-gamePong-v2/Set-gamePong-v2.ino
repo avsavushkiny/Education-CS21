@@ -4,21 +4,20 @@ Week 000
 Set - Game Pong v2
 
 doc A. Savushkin
-09.11.21
+11.11.21
 */
 
 #include <U8glib.h>
 
 U8GLIB_ST7920_128X64_4X u8g(13, 11, 12); //e(SCK), r/w(MOSI), rs(CS)
 
-//Define Pins
-#define OLED_RESET 4
-#define BEEPER 3
+//def pins
 #define CONTROL_A A2
 #define CONTROL_B A3
 
-//Define Visuals
-#define FONT_SIZE 2
+//def visuals
+#define SCREEN_OX 0
+#define SCREEN_OY 0
 #define SCREEN_WIDTH 127
 #define SCREEN_HEIGHT 63
 #define PADDLE_WIDTH 4
@@ -31,55 +30,73 @@ U8GLIB_ST7920_128X64_4X u8g(13, 11, 12); //e(SCK), r/w(MOSI), rs(CS)
 #define MIN_Y_SPEED 0.5
 #define MAX_Y_SPEED 2
 
-int paddleLocationA = 0;
-int paddleLocationB = 0;
-
+//def value
 float ballX = SCREEN_WIDTH / 2;
 float ballY = SCREEN_HEIGHT / 2;
 float ballSpeedX = 2;
 float ballSpeedY = 1;
 
+int paddleLocationA = 0;
+int paddleLocationB = 0;
 int lastPaddleLocationA = 0;
 int lastPaddleLocationB = 0;
 
 int scoreA = 0;
 int scoreB = 0;
 
-//Setup
-void setup()
+//pong_log.XBM
+const uint8_t pongLogo[] PROGMEM={
+  //w 70px, h 20px
+  0x00, 0x00, 0x00, 0x06, 0x00, 0x60, 0x00, 0x00, 0x00, 0xFE, 0x03, 0xE0, 
+  0x7F, 0x00, 0xFC, 0x03, 0xE0, 0x1F, 0xFE, 0x0F, 0xF0, 0xFF, 0x01, 0xFE, 
+  0x07, 0xF0, 0x1F, 0xFE, 0x0F, 0xF8, 0xFF, 0x03, 0xFF, 0x0F, 0xFC, 0x1F, 
+  0x1E, 0x1E, 0x7C, 0xE0, 0x03, 0x0F, 0x0F, 0xFC, 0x19, 0x1E, 0x1E, 0x3E, 
+  0xC0, 0x87, 0x07, 0x1E, 0x3E, 0x00, 0x1E, 0x1C, 0x1E, 0x80, 0x8F, 0x07, 
+  0x1E, 0x1F, 0x00, 0x1E, 0x1E, 0x0F, 0x00, 0x8F, 0x07, 0x1E, 0x0F, 0x00, 
+  0x1E, 0x1F, 0x0F, 0x00, 0x8F, 0x07, 0x1E, 0x0F, 0x00, 0xFE, 0x0F, 0x0F, 
+  0x00, 0x8F, 0x07, 0x1E, 0x0F, 0x00, 0xFE, 0x07, 0x0F, 0x00, 0x8F, 0x07, 
+  0x1E, 0x8F, 0x1F, 0xFE, 0x03, 0x0F, 0x00, 0x8F, 0x07, 0x1E, 0x8F, 0x1F, 
+  0x1E, 0x00, 0x1E, 0x00, 0x8F, 0x07, 0x1E, 0x8F, 0x1F, 0x1E, 0x00, 0x1E, 
+  0x80, 0x87, 0x07, 0x1E, 0x1F, 0x1E, 0x1E, 0x00, 0x7E, 0xC0, 0x87, 0x07, 
+  0x1E, 0x3E, 0x1E, 0x1E, 0x00, 0xFC, 0xF9, 0x83, 0x07, 0x1E, 0x7C, 0x1E, 
+  0x1E, 0x00, 0xF8, 0xFF, 0x81, 0x07, 0x1E, 0xFC, 0x1F, 0x1E, 0x00, 0xE0, 
+  0xFF, 0x80, 0x07, 0x1E, 0xF0, 0x1F, 0x1E, 0x00, 0x80, 0x3F, 0x80, 0x07, 
+  0x1E, 0xE0, 0x1F, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+};
+
+//setup
+void setup()                         
 {
-  splash();
+  renderStartMessage();  //draw logo, set font, set print pos, print, delay
 }
 
-//Splash Screen
-void splash()
+//rendering start on message
+void renderStartMessage()
 {
   u8g.firstPage();
-  do {
-  u8g.setColorIndex(1);
-  u8g.setFont(u8g_font_profont10);
-  u8g.drawStr(10, 35, "press start");
-  u8g.drawStr(10, 45, "Move paddle to start!");
-  } while (u8g.nextPage());
+	do {	
+	  u8g.drawXBMP(29, 16, 70, 20, pongLogo); //x, y, w, h, xbmp
+
+    u8g.setFont(u8g_font_profont10);
+    u8g.setPrintPos(30, 43); //x, y
+    u8g.print((String) "Atari. 1972");
+    
+    u8g.setPrintPos(30, 50); //x, y
+    u8g.print((String) "Game for two");
+
+	} while (u8g.nextPage());
+	delay(2000);
 }
 
-//Loop
+//loop
 void loop()
 {
-  int controlA = analogRead(CONTROL_A);
-  int controlB = analogRead(CONTROL_B);
-
-  /*while (abs(controlA - analogRead(CONTROL_A) + controlB - analogRead(CONTROL_B)) < 10)
-  {
-    // show as long as the total absolute change of
-    // both potmeters is smaler than 5
-  }*/
-
-  calculateMovement();
-  drawRender();
-  delay(10);
+  calculateMovement();  //paddle location, paddle speed, ball, bouce, score
+  renderGraphics();     //function draw and drawScore
+  delay(10);            //speed game
 }
 
+//calculate
 void calculateMovement()
 {
   int controlA = analogRead(CONTROL_A);
@@ -142,30 +159,32 @@ void calculateMovement()
   lastPaddleLocationB = paddleLocationB;
 }
 
+//draw paddle, center line, ball, field line
 void draw()
 {
   //draw paddle A
-  u8g.drawFrame(PADDLE_PADDING, paddleLocationA, PADDLE_WIDTH, PADDLE_HEIGHT);
+  u8g.drawFrame(PADDLE_PADDING, paddleLocationA, PADDLE_WIDTH, PADDLE_HEIGHT);  //x, y, w, h
   //draw paddle B
-  u8g.drawFrame(SCREEN_WIDTH - PADDLE_WIDTH - PADDLE_PADDING, paddleLocationB, PADDLE_WIDTH, PADDLE_HEIGHT);
+  u8g.drawFrame(SCREEN_WIDTH - PADDLE_WIDTH - PADDLE_PADDING, paddleLocationB, PADDLE_WIDTH, PADDLE_HEIGHT);  //x, y, w, h
   //draw center line
-  for (int i = 0; i < SCREEN_HEIGHT; i += 4)
+  for (int i = 1; i < SCREEN_HEIGHT; i += 4)
   {
-    u8g.drawVLine(SCREEN_WIDTH / 2, i, 2);
+    u8g.drawVLine(SCREEN_WIDTH / 2, i, 2);   //x, y, length
   }
   //draw ball
-  u8g.drawFrame(ballX, ballY, BALL_SIZE, BALL_SIZE);
-  //draw line
-  u8g.drawHLine(0, 0, 127);
-  u8g.drawHLine(0, 63, 127);
+  u8g.drawFrame(ballX, ballY, BALL_SIZE, BALL_SIZE);     //x, y, w, h
+  //draw field line
+  u8g.drawHLine(SCREEN_OX, SCREEN_OY, SCREEN_WIDTH);     //x, y, length
+  u8g.drawHLine(SCREEN_OX, SCREEN_HEIGHT, SCREEN_WIDTH); //x, y, length
 }
 
+//effect
 void addEffect(int paddleSpeed)
 {
   float oldBallSpeedY = ballSpeedY;
 
-  //add effect to ball when paddle is moving while bouncing.
-  //for every pixel of paddle movement, add or substact EFFECT_SPEED to ballspeed.
+  //add effect to ball when paddle is moving while bouncing
+  //for every pixel of paddle movement, add or substact EFFECT_SPEED to ballspeed
   for (int effect = 0; effect < abs(paddleSpeed); effect++)
   {
     if (paddleSpeed > 0)
@@ -196,22 +215,37 @@ void addEffect(int paddleSpeed)
     ballSpeedY = -MAX_Y_SPEED;
 }
 
+void valPaddle()
+{
+  int controlA = analogRead(CONTROL_A);
+  int controlB = analogRead(CONTROL_B);
+  int absValPaddle = abs(controlA - analogRead(CONTROL_A) + controlB - analogRead(CONTROL_B));
+
+  while (absValPaddle < 10)
+  {
+    // show as long as the total absolute change of
+    // both potmeters is smaler than 5
+  }
+}
+
+//draw value score
 void drawScore()
 {
   //print scores
-  u8g.setColorIndex(1);
-	u8g.setFont(u8g_font_profont10);
-  u8g.setPrintPos(10, 10);
-  u8g.print(scoreA);
-  u8g.setPrintPos(73, 10); //+1 because of dotted line.
-  u8g.print(scoreB);
+  u8g.setColorIndex(1);             //black
+	u8g.setFont(u8g_font_profont10);  //w 5px, h 9px, use https://github.com/olikraus/u8glib/wiki/fontgroup
+  u8g.setPrintPos(15, 10);          //x, y
+  u8g.print(scoreA);                //var scoreA
+  u8g.setPrintPos(78, 10);          //x, y
+  u8g.print(scoreB);                //var scoreB
 }
 
-void drawRender()
+//render graphics
+void renderGraphics()
 {
   u8g.firstPage();
     do {
-    draw();
-    drawScore();
+    draw();        //paddle, center line, ball, field line 
+    drawScore();   //color index, set font, set print pos, print val
     } while (u8g.nextPage());
 }
