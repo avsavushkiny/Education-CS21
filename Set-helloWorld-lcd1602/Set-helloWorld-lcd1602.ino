@@ -9,11 +9,11 @@ doc A. Savushkin
 
 #include <LiquidCrystal.h>  //add library
 
-LiquidCrystal lcd(12, 11, 5, 4, 3, 2); //setup library rs, en, d4, d5, d6, d7
+LiquidCrystal lcd(12, 11, 5, 4, 3, 2); //rs, en, d4, d5, d6, d7
 
 void setup()
 {
-   lcd.begin(16, 2);    //initialisation display c16-r2
+   lcd.begin(16, 2);    //initialization display c16-r2
    lcd.clear();         //clear display
 }
 
