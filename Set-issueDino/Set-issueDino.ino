@@ -61,3 +61,12 @@ int drawSprite()
 {
 
 }
+
+int drawHello()
+{
+  lcd.setCursor(0, 0);
+  lcd.print("Hello World");
+
+  lcd.setCursor(0, 1);
+  lcd.print("Alisa");
+}
