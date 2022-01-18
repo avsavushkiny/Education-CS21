@@ -30,7 +30,7 @@ byte ghostB[8] =
         B01110,
         B11011,
         B10001,
-        B10001,
+        B11111,
         B10101,
         B00000};
 
@@ -117,6 +117,8 @@ bool playState = false;
 bool eat = false;
 bool eatRasp = false;
 
+bool ghostState = false;
+
 int score = 0;
 int scoreH = 0;
 
@@ -151,7 +153,7 @@ void loop(void)
     butStateP1 = digitalRead(pinButtonP1);
     butStateP2 = digitalRead(pinButtonP2);
 
-    if ((butStateP2 == true) && (butStateP1 == true))
+    if ((butStateP2 == true) || (butStateP1 == true))
     {
         playState = true;
     }
@@ -168,58 +170,80 @@ void loop(void)
 
 void startPage(void)
 {
-    for (int b = 15; b >= 13; b--)
+    int randomSprite;
+    randomSprite = random(2, 5);
+
+    for (int b = 15; b >= 8; b--)
     {
-        lcd.clear();
+        //lcd.clear();
 
         //text
-        lcd.setCursor(0, 0);
-        lcd.print((String) "PacMan game");
-        lcd.setCursor(0, 1);
-        lcd.print("press any key");
+        lcd.setCursor(2, 0);
+        lcd.print((String) "PacMan");
+
+        if (b <= 15)
+        {
+            lcd.setCursor(2, 1);
+            lcd.print("press key");
+        }
+
+        if (b <= 11)
+        {
+            lcd.setCursor(2, 1);
+            lcd.print("to again  ");
+        }
 
         //pacman
-        lcd.setCursor(12, 0);
+
+        lcd.setCursor(0, 0);
         lcd.write((byte)1);
 
         lcd.setCursor(b, 0);
-        lcd.write((byte)4);
+        lcd.write((byte)randomSprite);
 
         lcd.setCursor(b + 1, 0);
         lcd.write((byte)0);
+        lcd.setCursor(8, 0);
+        lcd.write((byte)0);
 
-        delay(250);
+        delay(150);
     }
 }
 
 void startGame(void)
 {
-    lcd.clear();
+    //lcd.clear();
 
     eat = false;
     eatRasp = false;
 
-    //random
+    //calculate random
     //random ghost B
     int8_t rndDistB;
-    rndDistB = random(2, 8);
+    rndDistB = random(2, 10);
+
     //random heart
     int8_t rndDistHeart;
     rndDistHeart = random(2, 10);
-    //fix bug
-    if (rndDistB == rndDistHeart)
-    {
-        rndDistHeart = rndDistHeart + 2;
-    }
+
     //random raspberry
     int8_t rndRasp;
-    rndRasp = random(2, 8);
+    rndRasp = random(2, 10);
     int8_t rndDistRasp;
     rndDistRasp = random(2, 10);
 
+    //fix bug
+
+    debug("rndDistHeart", rndDistHeart);
+    debug("rndDistB", rndDistB);
+    debug("rndDistRasp", rndDistRasp);
+    debug(" ", 000);
+
+    //calculate game
     //main
     for (int a = 15; a >= -10; a--)
     {
+        lcd.clear();
 
         //read button
         butStateP1 = digitalRead(pinButtonP1);
@@ -246,38 +270,67 @@ void startGame(void)
         }
 
         //traffic
-        //ghostA
+        //ghost 1
         lcd.setCursor(a, 1);
         lcd.write((byte)2);
-        lcd.setCursor(a + 1, 1);
-        lcd.write((byte)0);
-        //ghostB
+        //lcd.setCursor(a + 1, 1);
+        //lcd.write((byte)0);
+        //ghost 2
         lcd.setCursor(a + rndDistB, 1);
         lcd.write((byte)2);
-        lcd.setCursor(a + rndDistB + 1, 1);
-        lcd.write((byte)0);
+        //lcd.setCursor(a + rndDistB + 1, 1);
+        //lcd.write((byte)0);
         //heart
         if (eat == false)
         {
+            //!eat to
             lcd.setCursor(a + rndDistHeart, 1);
             lcd.write((byte)6);
-            lcd.setCursor(a + rndDistHeart + 1, 1);
-            lcd.write((byte)0);
+            //lcd.setCursor(a + rndDistHeart + 1, 1);
+            //lcd.write((byte)0);
         }
         else
         {
+            eat = true;
             lcd.setCursor(a + rndDistHeart, 1);
             lcd.write((byte)0);
         }
+
         //raspberry
-        if (rndRasp == 2)
+        if (eatRasp == false)
         {
             lcd.setCursor(a + rndDistRasp, 1);
             lcd.write((byte)4);
-            lcd.setCursor(a + rndDistRasp + 1, 1);
+            //lcd.setCursor(a + rndDistRasp + 1, 1);
+            //lcd.write((byte)0);
+        }
+        else
+        {
+            eatRasp = true;
+            lcd.setCursor(a + rndDistRasp, 1);
             lcd.write((byte)0);
         }
 
+        //raspberry 2
+        /*
+        if (rndRasp == 2)
+        {
+            //!eat to
+            if (eatRasp == false)
+            {
+                lcd.setCursor(a + rndDistRasp, 1);
+                lcd.write((byte)4);
+                //lcd.setCursor(a + rndDistRasp + 1, 1);
+                //lcd.write((byte)0);
+            }
+            else
+            {
+                eatRasp = true;
+                lcd.setCursor(a + rndDistRasp, 1);
+                lcd.write((byte)0);
+            }
+        }
+        */
 
         //to eat
         //score and to eat heart
@@ -289,6 +342,8 @@ void startGame(void)
             score = score + 1;
             eat = true;
 
+            debugLcd("h");
+
             delay(350);
         }
         //player P2
@@ -298,6 +353,8 @@ void startGame(void)
             lcd.write((byte)7); //draw toEat
             score = score + 1;
             eat = true;
+
+            debugLcd("h");
 
             delay(350);
         }
@@ -312,7 +369,9 @@ void startGame(void)
             score = score + 10;
             eatRasp = true;
 
-            delay(350);  
+            debugLcd("r");
+
+            delay(350);
         }
         //player P2
         if ((butStateP2 == false) && (a + rndDistRasp == 3) && (eatRasp == false))
@@ -322,10 +381,10 @@ void startGame(void)
             score = score + 10;
             eatRasp = true;
 
-            delay(350); 
+            debugLcd("r");
+
+            delay(350);
         }
-
-
 
         //score
         lcd.setCursor(12, 0);
@@ -334,7 +393,7 @@ void startGame(void)
         //life
 
         //speed game
-        delay(speed);
+        delay(250); //(speed)
     }
 
     //dynamic speed
@@ -384,8 +443,14 @@ void P2y0(void)
     lcd.write((byte)0);
 }
 
-//debug
+//debug /text, var
 void debug(String text, int var)
 {
-    Serial.println((String) text + var);
+    Serial.println((String)text + var);
+}
+
+void debugLcd(String text)
+{
+    lcd.setCursor(6, 0);
+    lcd.print(text);
 }
