@@ -393,7 +393,7 @@ void startGame(void)
         //life
 
         //speed game
-        delay(250); //(speed)
+        delay(speed); //(speed)
     }
 
     //dynamic speed
