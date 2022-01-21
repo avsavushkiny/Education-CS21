@@ -12,7 +12,7 @@ LiquidCrystal lcd(12, 11, 5, 4, 3, 2);
 
 void startGame();
 
-byte ghostA[8] =
+byte ghostA[8] = //ghost state false
     {
         B00000,
         B00000,
@@ -23,7 +23,7 @@ byte ghostA[8] =
         B10101,
         B00000};
 
-byte ghostB[8] =
+byte ghostB[8] = //ghost state true
     {
         B00000,
         B00000,
@@ -150,6 +150,11 @@ void setup(void)
 
 void loop(void)
 {
+    stateGame();
+}
+
+void stateGame()
+{
     butStateP1 = digitalRead(pinButtonP1);
     butStateP2 = digitalRead(pinButtonP2);
 
@@ -170,13 +175,13 @@ void loop(void)
 
 void startPage(void)
 {
+    lcd.clear();
+
     int randomSprite;
     randomSprite = random(2, 5);
 
     for (int b = 15; b >= 8; b--)
     {
-        //lcd.clear();
-
         //text
         lcd.setCursor(2, 0);
         lcd.print((String) "PacMan");
@@ -194,7 +199,6 @@ void startPage(void)
         }
 
         //pacman
-
         lcd.setCursor(0, 0);
         lcd.write((byte)1);
 
@@ -342,7 +346,7 @@ void startGame(void)
             score = score + 1;
             eat = true;
 
-            debugLcd("h");
+            //debugLcd("h");
 
             delay(350);
         }
@@ -354,7 +358,7 @@ void startGame(void)
             score = score + 1;
             eat = true;
 
-            debugLcd("h");
+            //debugLcd("h");
 
             delay(350);
         }
@@ -369,7 +373,7 @@ void startGame(void)
             score = score + 10;
             eatRasp = true;
 
-            debugLcd("r");
+            //debugLcd("r");
 
             delay(350);
         }
@@ -381,7 +385,7 @@ void startGame(void)
             score = score + 10;
             eatRasp = true;
 
-            debugLcd("r");
+            //debugLcd("r");
 
             delay(350);
         }
@@ -390,7 +394,32 @@ void startGame(void)
         lcd.setCursor(12, 0);
         lcd.print((String) "$" + score);
 
-        //life
+        //life PacMan
+        //player P1
+        if ((butStateP1 == false) && ((a == 1) || (a + rndDistB == 1)) && (ghostState == false))
+        {
+            lifePacMan = lifePacMan - 1;
+
+            if (lifePacMan == 0)
+            {
+                overPage();
+                break; //out to cycle
+            }
+        }
+        //player P2
+        if ((butStateP2 == false) && ((a == 3) || (a + rndDistB == 3)) && (ghostState == false))
+        {
+            lifePacMan = lifePacMan - 1;
+
+            if (lifePacMan == 0)
+            {
+                overPage();
+                break; //out to cycle
+            }
+        }
+        //draw life
+        lcd.setCursor(11, 0);
+        lcd.print(lifePacMan);
 
         //speed game
         delay(speed); //(speed)
@@ -409,6 +438,18 @@ void startGame(void)
 
 void overPage(void)
 {
+    lcd.clear();
+    lcd.setCursor(0, 0);
+    lcd.print("game over");
+
+    score = 0;
+    speed = 150;
+    lifePacMan = 3;
+
+    delay(3000);
+
+    playState = false;
+    stateGame();
 }
 
 void P1y1(void)
