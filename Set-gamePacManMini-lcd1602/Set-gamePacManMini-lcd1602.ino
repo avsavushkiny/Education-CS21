@@ -1,10 +1,10 @@
 /*
 Week 000
 
-Set - Pac Man mini
+Set - Pac Man mini - LCD1602
 
 doc A. Savushkin
-16.01.22
+16.01.22 - 23.01.22
 */
 
 #include <LiquidCrystal.h>
@@ -118,6 +118,7 @@ bool eat = false;
 bool eatRasp = false;
 
 bool ghostState = false;
+uint8_t ghostScore = 10;
 
 int score = 0;
 int scoreH = 0;
@@ -273,17 +274,34 @@ void startGame(void)
             P2y1();
         }
 
-        //traffic
-        //ghost 1
-        lcd.setCursor(a, 1);
-        lcd.write((byte)2);
-        //lcd.setCursor(a + 1, 1);
-        //lcd.write((byte)0);
-        //ghost 2
-        lcd.setCursor(a + rndDistB, 1);
-        lcd.write((byte)2);
-        //lcd.setCursor(a + rndDistB + 1, 1);
-        //lcd.write((byte)0);
+        //traffic + ghostState
+        if (ghostState == false)
+        {
+            //ghost 1
+            lcd.setCursor(a, 1);
+            lcd.write((byte)2);
+            //lcd.setCursor(a + 1, 1);
+            //lcd.write((byte)0);
+            //ghost 2
+            lcd.setCursor(a + rndDistB, 1);
+            lcd.write((byte)2);
+            //lcd.setCursor(a + rndDistB + 1, 1);
+            //lcd.write((byte)0);
+        }
+        else //if ghostState == true
+        {
+            //ghost 1
+            lcd.setCursor(a, 1);
+            lcd.write((byte)3);
+            //lcd.setCursor(a + 1, 1);
+            //lcd.write((byte)0);
+            //ghost 2
+            lcd.setCursor(a + rndDistB, 1);
+            lcd.write((byte)3);
+            //lcd.setCursor(a + rndDistB + 1, 1);
+            //lcd.write((byte)0);
+        }
+
         //heart
         if (eat == false)
         {
@@ -314,27 +332,6 @@ void startGame(void)
             lcd.setCursor(a + rndDistRasp, 1);
             lcd.write((byte)0);
         }
-
-        //raspberry 2
-        /*
-        if (rndRasp == 2)
-        {
-            //!eat to
-            if (eatRasp == false)
-            {
-                lcd.setCursor(a + rndDistRasp, 1);
-                lcd.write((byte)4);
-                //lcd.setCursor(a + rndDistRasp + 1, 1);
-                //lcd.write((byte)0);
-            }
-            else
-            {
-                eatRasp = true;
-                lcd.setCursor(a + rndDistRasp, 1);
-                lcd.write((byte)0);
-            }
-        }
-        */
 
         //to eat
         //score and to eat heart
@@ -372,6 +369,7 @@ void startGame(void)
             lcd.write((byte)7); //draw toEat
             score = score + 10;
             eatRasp = true;
+            ghostState = true;
 
             //debugLcd("r");
 
@@ -384,14 +382,32 @@ void startGame(void)
             lcd.write((byte)7); //draw toEat
             score = score + 10;
             eatRasp = true;
+            ghostState = true;
 
             //debugLcd("r");
 
             delay(350);
         }
 
+        //ghost score
+        if (ghostState == true)
+        {
+            ghostScore = ghostScore - 1;
+
+            lcd.setCursor(6, 0);
+            lcd.print(ghostScore);
+
+            if (ghostScore == 0)
+            {
+                ghostState = false;
+                ghostScore = 10;
+
+                //break;
+            }
+        }
+
         //score
-        lcd.setCursor(12, 0);
+        lcd.setCursor(10, 0);
         lcd.print((String) "$" + score);
 
         //life PacMan
@@ -418,8 +434,28 @@ void startGame(void)
             }
         }
         //draw life
-        lcd.setCursor(11, 0);
+        lcd.setCursor(9, 0);
         lcd.print(lifePacMan);
+
+        //to eat ghostB
+        //player P1
+        if ((butStateP1 == false) && ((a == 1) || (a + rndDistB == 1)) && (ghostState == true))
+        {
+            //to eat ghostB
+            lcd.setCursor(1, 1);
+            lcd.write((byte)7);
+
+            score = score + 100;
+        }
+        //player P2
+        if ((butStateP2 == false) && ((a == 3) || (a + rndDistB == 3)) && (ghostState == true))
+        {
+            //to eat ghostB
+            lcd.setCursor(3, 1);
+            lcd.write((byte)7);
+
+            score = score + 100;
+        }
 
         //speed game
         delay(speed); //(speed)
@@ -439,8 +475,11 @@ void startGame(void)
 void overPage(void)
 {
     lcd.clear();
-    lcd.setCursor(0, 0);
-    lcd.print("game over");
+
+    lcd.setCursor(6, 0);
+    lcd.print("game");
+    lcd.setCursor(6, 1);
+    lcd.print("over");
 
     score = 0;
     speed = 150;
