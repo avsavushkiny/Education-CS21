@@ -238,12 +238,13 @@ void startGame(void)
     rndDistRasp = random(2, 10);
 
     //fix bug
-
+    /*
     debug("rndDistHeart", rndDistHeart);
     debug("rndDistB", rndDistB);
     debug("rndDistRasp", rndDistRasp);
     debug(" ", 000);
-
+    */
+   
     //calculate game
     //main
     for (int a = 15; a >= -10; a--)
@@ -410,11 +411,17 @@ void startGame(void)
         lcd.setCursor(10, 0);
         lcd.print((String) "$" + score);
 
-        //life PacMan
+        //life PacMan and gameOver
         //player P1
         if ((butStateP1 == false) && ((a == 1) || (a + rndDistB == 1)) && (ghostState == false))
         {
             lifePacMan = lifePacMan - 1;
+
+            if (lifePacMan > 0)
+            {
+                lifePage();
+                break; //out to cycle
+            }
 
             if (lifePacMan == 0)
             {
@@ -426,6 +433,12 @@ void startGame(void)
         if ((butStateP2 == false) && ((a == 3) || (a + rndDistB == 3)) && (ghostState == false))
         {
             lifePacMan = lifePacMan - 1;
+
+            if (lifePacMan > 0)
+            {
+                lifePage();
+                break; //out to cycle
+            }
 
             if (lifePacMan == 0)
             {
@@ -521,6 +534,21 @@ void P2y0(void)
     lcd.write((byte)1);
     lcd.setCursor(3, 1);
     lcd.write((byte)0);
+}
+
+void lifePage()
+{
+    lcd.clear();
+    //draw sprite PacMan + text
+    lcd.setCursor(5, 0);
+    lcd.print("loooser");
+
+    lcd.setCursor(6, 1);
+    lcd.write((byte)1);
+    lcd.setCursor(7, 1);
+    lcd.print((String) " x " + lifePacMan);
+
+    delay(3000);
 }
 
 //debug /text, var
