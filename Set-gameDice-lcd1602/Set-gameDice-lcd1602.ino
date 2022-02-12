@@ -8,7 +8,7 @@ doc A. Savushkin
 */
 
 #include <LiquidCrystal.h>
-LiquidCrystal lcd(12, 11, 5, 4, 3, 2); //Se
+LiquidCrystal lcd(12, 11, 5, 4, 3, 2);
 
 int8_t rndDice[3] = {0};
 
@@ -48,5 +48,5 @@ void overPage()
 
 void debug()
 {
-    Serial.print(" Game Dino was do");  
+    Serial.print("Game Dino");  
 } 

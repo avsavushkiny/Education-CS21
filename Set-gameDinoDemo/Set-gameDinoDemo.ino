@@ -1,7 +1,7 @@
 /*
 Week 000
 
-Set - Game Dino
+Set - Game Dino Demo
 
 doc A. Savushkin
 23.10.21
