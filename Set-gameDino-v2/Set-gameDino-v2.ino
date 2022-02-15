@@ -1,10 +1,20 @@
+/*
+Week 000
+
+Set - Game Dino on LCD1602
+
+doc A. Savushkin
+2.12.21
+*/
+
 #include <LiquidCrystal.h>
-LiquidCrystal lcd(12, 11, 7, 6, 5, 4);
+LiquidCrystal lcd(12, 11, 5, 4, 3, 2);
 
 boolean dinoOnGround = true;  //состояние определяющие находится ли ИГРОК на земле или нет
 
-int buttonPin = 8;
-int buzzerPin = 9;
+int buttonPin = 8;            //button player
+int buzzerPin = 9;            //buzzer
+
 int buttonState = 0;          //состояние кнопки
 int highScore = 0;            //переменная максимального счета
 boolean playState = false;    //состояние игрового прооцесса
@@ -14,7 +24,6 @@ int score = 0;                //начальное состояние счета
 
 //массивы данных dino и tree
 //определяющие образ ИГРОКа и препятствия
-
 byte dino [8]                 //массив символа dino
   {
     B00000,
@@ -27,7 +36,7 @@ byte dino [8]                 //массив символа dino
     B01100,
   };
 
-byte tree [8]                 //массив символа tree
+byte cactus [8]                 //массив символа cactus
   {
     B00011,
     B11011,
@@ -42,22 +51,21 @@ byte tree [8]                 //массив символа tree
 //запускаем функцию setup
 //определяющие настройки ввода, вывода и
 //координаты c-r вывода символа ИГРОКа
-
 void setup()                      
   {
     lcd.begin(16, 2);            //инициализируем параметры lcd
     lcd.createChar(7, dino);     //массив данных сохраняем как символ в 7 ячейку с именем dino
-    lcd.createChar(6, tree);     //массив данных сохраняем как символ в 6 ячейку с именем tree
+    lcd.createChar(6, cactus);   //массив данных сохраняем как символ в 6 ячейку с именем cactus
     
     lcd.setCursor(0, 1);         //размещаем курсор в c0-r1
     lcd.write(7);                //выводим символ находящийся в ячейке памяти 7
     
     pinMode(buttonPin, INPUT);   //определяем 8 пин как вход
     pinMode(buzzerPin, OUTPUT);  //определяем 9 пин как выход
-  } 
+  }
+
 //запускаем главный цикл loop - ядро программы
 //определяющий состояние playState - кнопки запуска игры
-
 void loop()
   {
     lcd.clear();                           //очищаем lcd экран
@@ -76,10 +84,10 @@ void loop()
         {                                  //то
           startGame();                     //происходит запуск функции startGame()
         }                                  
-    delay(100);                            //определим задержку ядра программыs 
+    delay(100);                            //определим задержку ядра программы 
   }                                        //точка выхода из loop 
-//функция описывающая ЦИКЛ игрового процесса
 
+//функция описывающая ЦИКЛ игрового процесса
 void startGame() {
 
   lcd.clear();                    //очищаем lcd экран
@@ -150,7 +158,8 @@ for (int i = 16; i >= -(dist + distTwo); i--)
     lcd.setCursor(i + dist + distTwo, 1);       
     lcd.write(6);                               
     lcd.setCursor(i + dist + distTwo + 1, 1);   
-    lcd.print("3");                              
+    lcd.print("3");
+
 //опишем условия столкновения,
 //вывода текста Game Over на экран по звершении ИГРЫ и вывода максимального счета
 

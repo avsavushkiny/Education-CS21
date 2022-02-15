@@ -9,8 +9,7 @@ doc A. Savushkin
 
 //add library
 #include <LiquidCrystal.h>
-//setup library
-LiquidCrystal lcd(12, 11, 7, 6, 5, 4);
+LiquidCrystal lcd(12, 11, 5, 4, 3, 2);
 
 boolean dinoOnGround = true;  //состояние определяющие находится ли ИГРОК на земле или нет
 
@@ -28,7 +27,7 @@ int distTwo = 0;              //начальное состояние перем
 
 int score = 0;                //начальное состояние счета ИГРОКа score
 
-//массивы данных dino и tree
+//массивы данных dino и cactus
 //определяющие образ ИГРОКа и препятствия
 
 byte dino [8]                 //массив символа dino
@@ -43,7 +42,7 @@ byte dino [8]                 //массив символа dino
     B01010,
   };
 
-byte tree [8]                 //массив символа tree
+byte cactus [8]                 //массив символа cactus
   {
     B00000,
     B00000,
@@ -63,7 +62,7 @@ void setup()
   {
     lcd.begin(16, 2);            //инициализируем параметры lcd
     lcd.createChar(7, dino);     //массив данных сохраняем как символ в 7 ячейку с именем dino
-    lcd.createChar(6, tree);     //массив данных сохраняем как символ в 6 ячейку с именем tree
+    lcd.createChar(6, cactus);   //массив данных сохраняем как символ в 6 ячейку с именем cactus
     
     lcd.setCursor(0, 1);         //размещаем курсор в c0-r1
     lcd.write(7);                //выводим символ находящийся в ячейке памяти 7
@@ -127,8 +126,7 @@ void startGame() {
 
 for (int i = 16; i >= -(dist + distTwo); i--)
   {
-                                  //в начале итерации ЦИКЛа выводим состояние СЧЕТа -
-    
+                                  //в начале итерации ЦИКЛа выводим состояние СЧЕТа
     lcd.setCursor(7, 0);
     lcd.print("demo");
     

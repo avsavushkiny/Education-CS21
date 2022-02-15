@@ -48,5 +48,5 @@ void overPage()
 
 void debug()
 {
-    Serial.print("Game Dino");  
+    Serial.print("Game Dice");  
 } 
