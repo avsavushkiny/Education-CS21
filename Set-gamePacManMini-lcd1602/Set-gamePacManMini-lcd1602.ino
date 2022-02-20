@@ -107,6 +107,7 @@ byte toEat[8] =
 
 #define pinButtonP1 8
 #define pinButtonP2 9
+#define pinVibration A0
 
 bool butStateP1 = false;
 bool butStateP2 = false;
@@ -125,6 +126,8 @@ int scoreH = 0;
 
 uint8_t speed = 150;
 int8_t lifePacMan = 3;
+
+bool vibration = false;
 
 void setup(void)
 {
@@ -417,6 +420,8 @@ void startGame(void)
         {
             lifePacMan = lifePacMan - 1;
 
+            vibCall();
+
             if (lifePacMan > 0)
             {
                 lifePage();
@@ -433,6 +438,8 @@ void startGame(void)
         if ((butStateP2 == false) && ((a == 3) || (a + rndDistB == 3)) && (ghostState == false))
         {
             lifePacMan = lifePacMan - 1;
+
+            vibCall();
 
             if (lifePacMan > 0)
             {
@@ -561,4 +568,14 @@ void debugLcd(String text)
 {
     lcd.setCursor(6, 0);
     lcd.print(text);
+}
+
+//vibration motor
+void vibCall()
+{
+    pinMode(pinVibration, OUTPUT);
+
+    analogWrite(pinVibration, 255);
+    delay(250);
+    analogWrite(pinVibration, 0);
 }
