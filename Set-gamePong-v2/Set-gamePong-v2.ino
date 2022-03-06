@@ -3,6 +3,9 @@ Week 000
 
 Set - Game Pong v2
 
+- Arduino Leonardo
+- ST7920_128X64
+
 doc A. Savushkin
 11.11.21
 */
@@ -65,7 +68,7 @@ const uint8_t pongLogo[] PROGMEM={
 };
 
 //setup
-void setup()                         
+void setup()
 {
   renderStartMessage();  //draw logo, set font, set print pos, print, delay
 }
