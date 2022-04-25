@@ -56,32 +56,3 @@ void loop(void)
 
     }
 }
-
-int drawSprite()
-{
-
-}
-
-int drawHello()
-{
-  lcd.setCursor(0, 0);
-  lcd.print("Hello World");
-
-  lcd.setCursor(0, 1);
-  lcd.print("Alisa");
-}
-
-
-void soundChristmas() {}
-
-
-
-
-
-String newYear2022()
-{
-  Serial.println("Happy New Year 2022!");
-  soundChristmas();
-
-  return "ok";
-}

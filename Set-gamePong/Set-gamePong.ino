@@ -9,7 +9,8 @@ doc A. Savushkin
 
 #include <U8glib.h>
 
-U8GLIB_ST7920_128X64_4X u8g(13, 11, 12); //e(SCK), r/w(MOSI), rs(CS)
+//U8GLIB_ST7920_128X64_4X u8g(13, 11, 12); //e(SCK), r/w(MOSI), rs(CS)
+U8GLIB_ST7920_128X64_4X u8g(A5);  // for LeoPCm
 
 // Define the PINS you're goint to use on your Arduino Nano
 int controller1 = 2; // ANALOG 2
@@ -218,8 +219,8 @@ void drawBall()
 {
     u8g.drawFrame(ballX, ballY, 2, 2);
 
-    ballX += ballSpeedX; Serial.println((String) "ballX " + ballX);
-    ballY += ballSpeedY; Serial.println((String) "ballY " + ballY);
+    ballX += ballSpeedX; //Serial.println((String) "ballX " + ballX);
+    ballY += ballSpeedY; //Serial.println((String) "ballY " + ballY);
 
     delay(10); //speed ball
 }

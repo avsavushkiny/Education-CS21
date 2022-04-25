@@ -12,7 +12,8 @@ doc A. Savushkin
 
 #include <U8glib.h>
 
-U8GLIB_ST7920_128X64_4X u8g(13, 11, 12); //e(SCK), r/w(MOSI), rs(CS)
+//U8GLIB_ST7920_128X64_4X u8g(13, 11, 12); //e(SCK), r/w(MOSI), rs(CS)
+U8GLIB_ST7920_128X64_4X u8g(A5);
 
 //def pins
 #define CONTROL_A A2
