@@ -17,8 +17,11 @@ U8G2_ST7920_128X64_1_HW_SPI u8g2(U8G2_R0, A5, 8); // 23
 int ballX = 64;
 int ballY = 32;
 
-int ballSpeedX = 2;
+int ballSpeedX = 1;
 int ballSpeedY = 1;
+
+int dataCalcPlayer1{};
+int dataCalcPlayer2{};
 
 void setup(void)
 {
@@ -27,6 +30,7 @@ void setup(void)
 
 void loop(void)
 {
+    calc();
     renderGraphics();
 }
 
@@ -40,9 +44,6 @@ void renderGraphics(void)
         drawRacket();
         drawBall();
     } while (u8g2.nextPage());
-
-    ballX += ballSpeedX;
-    ballY += ballSpeedY;
 }
 
 // рисуем поле
@@ -65,12 +66,6 @@ void drawField(void)
 // рисуем ракетки
 void drawRacket(void)
 {
-    int dataPlayer1 = analogRead(A0); // 18
-    int dataPlayer2 = analogRead(A1); // 19
-
-    int dataCalcPlayer1 = dataPlayer1 * (46.0 / 1023.0);
-    int dataCalcPlayer2 = dataPlayer2 * (46.0 / 1023.0);
-
     u8g2.drawFrame(0, round(dataCalcPlayer1), 3, 18);
     u8g2.drawFrame(125, round(dataCalcPlayer2), 3, 18);
 
@@ -84,7 +79,38 @@ void drawBall(void)
 
     drawDebug(30, (String)ballX);
 
-    delay(20);
+    delay(5);
+}
+
+// производим вычисления
+void calc()
+{
+    int dataPlayer1 = analogRead(A0); // 18
+    int dataPlayer2 = analogRead(A1); // 19
+
+    dataCalcPlayer1 = dataPlayer1 * (46.0 / 1023.0);
+    dataCalcPlayer2 = dataPlayer2 * (46.0 / 1023.0);
+
+    ballX += ballSpeedX;
+    ballY += ballSpeedY;
+
+    if ((ballX >= 127) || (ballX <= 0))
+    {
+        ballSpeedX *= -1;
+    }
+    
+    if ((ballY >= 63) || (ballY <= 0))
+    {
+        ballSpeedY *= -1;
+    }
+
+    if ((ballX >= 3) && (ballX <= 5))
+    {
+        if ((ballY >= round(dataCalcPlayer1)) && (ballY <= round(dataCalcPlayer1) + 18))
+        {
+            ballSpeedX *= -1;
+        }
+    }
 }
 
 // пишем дебаг на экране
@@ -93,9 +119,4 @@ void drawDebug(int8_t ddistY, String text)
     u8g2.setFont(u8g2_font_4x6_tf);
     u8g2.setCursor(10, ddistY);
     u8g2.print(text);
-}
-
-void debugSerial(int val, String text)
-{
-    Serial.println((String)val + text);
 }
