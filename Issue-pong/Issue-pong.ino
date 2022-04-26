@@ -12,10 +12,10 @@ doc A. Savushkin
 #include <SPI.h>
 
 U8G2_ST7920_128X64_1_HW_SPI u8g2(U8G2_R0, A5, 8); // 23
-//U8GLIB_ST7920_128X64_4X u8g(A5);
+// U8GLIB_ST7920_128X64_4X u8g(A5);
 
-int ballX = 128 / 2;
-int ballY =  64 / 2;
+int ballX = 64;
+int ballY = 32;
 
 int ballSpeedX = 2;
 int ballSpeedY = 1;
@@ -36,14 +36,13 @@ void renderGraphics(void)
     u8g2.firstPage();
     do
     {
-        debugSerial(ballX, "n");
         drawField();
-        debugSerial(ballX, "drawfield");
-        drawBall();
-        debugSerial(ballX, "drawball");
         drawRacket();
-        debugSerial(ballX, "drawracket");
+        drawBall();
     } while (u8g2.nextPage());
+
+    ballX += ballSpeedX;
+    ballY += ballSpeedY;
 }
 
 // рисуем поле
@@ -60,7 +59,7 @@ void drawField(void)
         distGrid += 8;
     }
 
-    //drawDebug(10, "field");
+    drawDebug(10, "field");
 }
 
 // рисуем ракетки
@@ -69,13 +68,13 @@ void drawRacket(void)
     int dataPlayer1 = analogRead(A0); // 18
     int dataPlayer2 = analogRead(A1); // 19
 
-    int dataCalcPlayer1 = dataPlayer1 * (46.0/1023.0);
-    int dataCalcPlayer2 = dataPlayer2 * (46.0/1023.0);
+    int dataCalcPlayer1 = dataPlayer1 * (46.0 / 1023.0);
+    int dataCalcPlayer2 = dataPlayer2 * (46.0 / 1023.0);
 
     u8g2.drawFrame(0, round(dataCalcPlayer1), 3, 18);
     u8g2.drawFrame(125, round(dataCalcPlayer2), 3, 18);
 
-    //drawDebug(20, "racket");
+    drawDebug(20, "racket");
 }
 
 // рисуем мячик
@@ -83,12 +82,9 @@ void drawBall(void)
 {
     u8g2.drawFrame(ballX, ballY, 2, 2);
 
-    ballX += ballSpeedX;
-    ballY += ballSpeedY;
+    drawDebug(30, (String)ballX);
 
-    //drawDebug(30, (String)ballX);
-
-    delay(2000);
+    delay(20);
 }
 
 // пишем дебаг на экране
@@ -101,5 +97,5 @@ void drawDebug(int8_t ddistY, String text)
 
 void debugSerial(int val, String text)
 {
-    Serial.println((String) val + text);
+    Serial.println((String)val + text);
 }
