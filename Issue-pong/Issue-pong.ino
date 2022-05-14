@@ -113,6 +113,12 @@ void calc()
     }
 }
 
+/*
+U8G2_ST7920_128X64_1_HW_SPI(rotation, cs [, reset]) [page buffer, size = 128 bytes]
+U8G2_ST7920_128X64_2_HW_SPI(rotation, cs [, reset]) [page buffer, size = 256 bytes]
+U8G2_ST7920_128X64_F_HW_SPI(rotation, cs [, reset]) [full framebuffer, size = 1024 bytes]
+*/
+
 // пишем дебаг на экране
 void drawDebug(int8_t ddistY, String text)
 {
