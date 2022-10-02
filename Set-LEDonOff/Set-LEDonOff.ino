@@ -8,7 +8,7 @@ short rx_byte = 0;
 void loop() {
   if (Serial.available() > 0) {    // is a character available?
     //rx_byte = Serial.read();
-    rx_byte = Serial.parseInt();
+      rx_byte = Serial.parseInt();
   
     switch (rx_byte) {
       case 1:
