@@ -1,0 +1,12 @@
+/*
+Here we use a function pointer to select one of the functions (, , or ). 
+The functions we want to use are associated with text strings 
+in the array.fnothing()functionA()functionB()commands[]
+
+When some serial data is available, we read until the end
+of the line (or until the buffer named is full, or until a timeout occurs) and loop through 
+the array to see whether we can find a match. 
+If a match was found, the function pointer is updated accordingly.textf
+
+Needless to say, there is lots of room for improvement.
+*/
