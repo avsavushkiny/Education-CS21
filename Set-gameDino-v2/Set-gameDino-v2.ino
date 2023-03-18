@@ -8,7 +8,7 @@ doc A. Savushkin
 */
 
 #include <LiquidCrystal.h>
-LiquidCrystal lcd(12, 11, 5, 4, 3, 2);
+LiquidCrystal lcd(12, 11, 7, 6, 5, 4);
 
 boolean dinoOnGround = true;  //состояние определяющие находится ли ИГРОК на земле или нет
 
