@@ -16,8 +16,8 @@ doc A. Savushkin
 U8GLIB_ST7920_128X64_4X u8g(A5);
 
 //def pins
-#define CONTROL_A A2
-#define CONTROL_B A3
+#define CONTROL_A A0
+#define CONTROL_B A1
 
 //def visuals
 #define SCREEN_OX 0
